@@ -19,6 +19,11 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         setupView()
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        addBlurRects()
+    }
 
     func setupView() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Import", style: .plain, target: self, action: #selector(ViewController.importPhoto))
@@ -46,6 +51,7 @@ extension ViewController {
             }
             guard let observations = request.results as? [VNFaceObservation] else { return }
             self.detectedFaces = Array(zip(observations, [Bool](repeating: false, count: observations.count)))
+            self.addBlurRects()
         }
         
         let handler = VNImageRequestHandler(ciImage: ciImage)
@@ -54,6 +60,40 @@ extension ViewController {
             try handler.perform([request])
         } catch {
             print(error.localizedDescription)
+        }
+    }
+    
+    func addBlurRects() {
+        // Remove existing face rectangles
+        self.imageView.subviews.forEach { $0.removeFromSuperview() }
+        
+        // Find the size of the image inside the imageview
+        let imageRect = self.imageView.contentClippingRect
+        
+        // Loop over the faces that were detected
+        for (index, face) in self.detectedFaces.enumerated() {
+            // Get the face position
+            let boundingBox = face.observation.boundingBox
+            
+            // Calculate its size
+            let size = CGSize(width: boundingBox.width * imageRect.width, height: boundingBox.height * imageRect.height)
+            
+            // Calculate its position
+            var origin = CGPoint(x: boundingBox.minX * imageRect.width, y: (1 - face.observation.boundingBox.minY) * imageRect.height - size.height)
+            
+            // Offset the position based on the content clipping rect
+            origin.y += imageRect.minY
+            
+            // Place a view there
+            let newView = UIView(frame: CGRect(origin: origin, size: size))
+            
+            // Store the face number as its tag
+            newView.tag = index
+            
+            // Color the border red and add the new view
+            newView.layer.borderColor = UIColor.red.cgColor
+            newView.layer.borderWidth = 2
+            self.imageView.addSubview(newView)
         }
     }
     
