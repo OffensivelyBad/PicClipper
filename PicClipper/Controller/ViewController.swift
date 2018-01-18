@@ -97,6 +97,16 @@ extension ViewController {
         }
     }
     
+    func renderBlurredFaces() {
+        guard let inputImage = self.inputImage else { return }
+        guard let ciImage = CIImage(image: inputImage) else { return }
+        let filter = CIFilter(name: "CIPixellate")
+        filter?.setValue(ciImage, forKey: kCIInputImageKey)
+        filter?.setValue(12, forKey: kCIInputScaleKey)
+        guard let outputImage = filter?.outputImage else { return }
+        let blurredImage = UIImage(ciImage: outputImage)
+    }
+    
 }
 
 // MARK: - UIImagePickerControllerDelegate
