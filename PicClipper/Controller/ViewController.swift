@@ -41,9 +41,8 @@ class ViewController: UIViewController {
 // MARK: - Facial detection
 extension ViewController {
     
-    func detectFaces() {
-        guard let inputImage = self.inputImage else { return }
-        guard let ciImage = CIImage(image: inputImage) else { return }
+    func detectFaces(in image: UIImage) {
+        guard let ciImage = CIImage(image: image) else { return }
         let request = VNDetectFaceRectanglesRequest { [unowned self] request, error in
             guard error == nil else {
                 print(error?.localizedDescription ?? "An Error Occurred")
@@ -94,17 +93,57 @@ extension ViewController {
             newView.layer.borderColor = UIColor.red.cgColor
             newView.layer.borderWidth = 2
             self.imageView.addSubview(newView)
+            let tap = UITapGestureRecognizer(target: self, action: #selector(ViewController.faceTapped(_:)))
+            newView.addGestureRecognizer(tap)
         }
     }
     
-    func renderBlurredFaces() {
-        guard let inputImage = self.inputImage else { return }
-        guard let ciImage = CIImage(image: inputImage) else { return }
+    func renderBlurredImage(from image: UIImage) -> UIImage? {
+        guard let ciImage = CIImage(image: image) else { return nil }
         let filter = CIFilter(name: "CIPixellate")
         filter?.setValue(ciImage, forKey: kCIInputImageKey)
         filter?.setValue(12, forKey: kCIInputScaleKey)
-        guard let outputImage = filter?.outputImage else { return }
-        let blurredImage = UIImage(ciImage: outputImage)
+        guard let outputImage = filter?.outputImage else { return nil }
+        return UIImage(ciImage: outputImage)
+    }
+    
+    func displayBlurredImage(from image: UIImage) {
+        guard let blurredImage = renderBlurredImage(from: image) else { return }
+        let renderer = UIGraphicsImageRenderer(size: image.size)
+        let result = renderer.image { ctx in
+            // Draw the original image first
+            image.draw(at: .zero)
+            
+            // Create an empty clipping path to hold the cutouts
+            let path = UIBezierPath()
+            
+            for face in self.detectedFaces {
+                guard face.blur else { continue }
+                
+                // Get the position of this face in the image coordinates
+                let boundingBox = face.observation.boundingBox
+                let size = CGSize(width: boundingBox.width * image.size.width, height: boundingBox.height * image.size.height)
+                let origin = CGPoint(x: boundingBox.minX * image.size.width, y: (1 - face.observation.boundingBox.minY) * image.size.height - size.height)
+                let rect = CGRect(origin: origin, size: size)
+                
+                // Convert the coordinates to a path and add to the clipping path
+                let miniPath = UIBezierPath(rect: rect)
+                path.append(miniPath)
+            }
+            
+            if !path.isEmpty {
+                path.addClip()
+                blurredImage.draw(at: .zero)
+            }
+        }
+        
+        self.imageView.image = result
+    }
+    
+    @objc func faceTapped(_ sender: UITapGestureRecognizer) {
+        guard let tappedView = sender.view, let image = self.inputImage else { return }
+        self.detectedFaces[tappedView.tag].blur = !detectedFaces[tappedView.tag].blur
+        displayBlurredImage(from: image)
     }
     
 }
@@ -116,7 +155,7 @@ extension ViewController: UIImagePickerControllerDelegate {
         self.imageView.image = image
         self.inputImage = image
         dismiss(animated: true) {
-            self.detectFaces()
+            self.detectFaces(in: image)
         }
     }
 }
