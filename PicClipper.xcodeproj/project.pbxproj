@@ -59,18 +59,10 @@
 				711B64BD200955AF003A9C98 /* Extension */,
 				711B64BC20095589003A9C98 /* Controller */,
 				711B64BB20095584003A9C98 /* View */,
-				711B64BA2009557D003A9C98 /* Model */,
 				711B64A820095575003A9C98 /* AppDelegate.swift */,
 				711B64B420095575003A9C98 /* Info.plist */,
 			);
 			path = PicClipper;
-			sourceTree = "<group>";
-		};
-		711B64BA2009557D003A9C98 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		711B64BB20095584003A9C98 /* View */ = {

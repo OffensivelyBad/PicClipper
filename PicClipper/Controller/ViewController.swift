@@ -27,6 +27,7 @@ class ViewController: UIViewController {
 
     func setupView() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Import", style: .plain, target: self, action: #selector(ViewController.importPhoto))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(ViewController.shareImage))
     }
     
     @objc func importPhoto() {
@@ -144,6 +145,17 @@ extension ViewController {
         guard let tappedView = sender.view, let image = self.inputImage else { return }
         self.detectedFaces[tappedView.tag].blur = !detectedFaces[tappedView.tag].blur
         displayBlurredImage(from: image)
+    }
+    
+}
+
+// MARK: - Sharing
+extension ViewController {
+    
+    @objc func shareImage() {
+        guard let image = self.imageView.image else { return }
+        let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        present(activityVC, animated: true, completion: nil)
     }
     
 }
