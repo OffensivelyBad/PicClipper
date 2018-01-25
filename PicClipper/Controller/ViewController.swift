@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     var inputImage: UIImage?
     var detectedFaces = [(observation: VNFaceObservation, blur: Bool)]()
+    var isShowingFaceRects = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +29,18 @@ class ViewController: UIViewController {
     func setupView() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Import", style: .plain, target: self, action: #selector(ViewController.importPhoto))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(ViewController.shareImage))
+        
+        // Add a gesture to hide the red rects
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(ViewController.showFaceRects))
+        self.imageView.isUserInteractionEnabled = true
+        self.imageView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func showFaceRects() {
+        self.isShowingFaceRects = !self.isShowingFaceRects
+        for subview in self.imageView.subviews {
+            subview.isHidden = self.isShowingFaceRects
+        }
     }
     
     @objc func importPhoto() {
