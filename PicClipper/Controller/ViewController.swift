@@ -12,9 +12,11 @@ import Vision
 class ViewController: UIViewController {
 
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var blurSlider: UISlider!
     var inputImage: UIImage?
     var detectedFaces = [(observation: VNFaceObservation, blur: Bool)]()
     var isShowingFaceRects = true
+    var blurValue: NSNumber = 12.5
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +29,7 @@ class ViewController: UIViewController {
     }
 
     func setupView() {
+        // Create bar button items
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Import", style: .plain, target: self, action: #selector(ViewController.importPhoto))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(ViewController.shareImage))
         
@@ -39,7 +42,7 @@ class ViewController: UIViewController {
     @objc func showFaceRects() {
         self.isShowingFaceRects = !self.isShowingFaceRects
         for subview in self.imageView.subviews {
-            subview.isHidden = self.isShowingFaceRects
+            subview.isHidden = !self.isShowingFaceRects
         }
     }
     
@@ -48,6 +51,15 @@ class ViewController: UIViewController {
         picker.allowsEditing = true
         picker.delegate = self
         present(picker, animated: true, completion: nil)
+    }
+    
+    @IBAction func sliderValueChanged(_ sender: UISlider) {
+        // Only redraw the image if the change in value is more than 1
+        guard let blurFloat = self.blurValue as? Float else { return }
+        guard sender.value > blurFloat + 1 || sender.value < blurFloat - 1 else { return }
+        self.blurValue = sender.value as NSNumber
+        guard let image = self.inputImage else { return }
+        displayBlurredImage(from: image)
     }
 
 }
@@ -116,7 +128,7 @@ extension ViewController {
         guard let ciImage = CIImage(image: image) else { return nil }
         let filter = CIFilter(name: "CIPixellate")
         filter?.setValue(ciImage, forKey: kCIInputImageKey)
-        filter?.setValue(12, forKey: kCIInputScaleKey)
+        filter?.setValue(self.blurValue, forKey: kCIInputScaleKey)
         guard let outputImage = filter?.outputImage else { return nil }
         return UIImage(ciImage: outputImage)
     }

@@ -7,6 +7,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -25,13 +26,22 @@
                                     <constraint firstAttribute="width" secondItem="Y9t-G6-No2" secondAttribute="height" multiplier="1:1" id="F9i-cw-SdH"/>
                                 </constraints>
                             </imageView>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="12.5" minValue="5" maxValue="20" translatesAutoresizingMaskIntoConstraints="NO" id="1dW-5U-Mi0">
+                                <rect key="frame" x="91.5" y="616" width="191.5" height="31"/>
+                                <connections>
+                                    <action selector="sliderValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="s2f-eS-ueV"/>
+                                </connections>
+                            </slider>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Y9t-G6-No2" secondAttribute="trailing" constant="16" id="Nsj-nG-x8v"/>
                             <constraint firstItem="Y9t-G6-No2" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="OxR-Rj-VST"/>
                             <constraint firstItem="Y9t-G6-No2" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="SIY-Dv-Bzj"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="1dW-5U-Mi0" secondAttribute="bottom" constant="21" id="a9W-Sj-1lD"/>
+                            <constraint firstItem="1dW-5U-Mi0" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.5" id="fNj-ie-JGL"/>
                             <constraint firstItem="Y9t-G6-No2" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="pCC-dQ-TKf"/>
+                            <constraint firstItem="1dW-5U-Mi0" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="qKh-Sm-3IQ"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
